@@ -194,8 +194,7 @@ async function spin(){
 startBtn.addEventListener('click', spin);
 copyBtn.addEventListener('click', async()=>{
   if(!lastResults.length) return toastMsg('NO CODE YET');
-  const text=lastResults.join('
-');
+  const text=lastResults.join('\n');
   try{ await navigator.clipboard.writeText(text); toastMsg(lastResults.length===1?'COPIED':'COPIED ALL'); vibrate(10); tone(880,.045,'sine',.025); }
   catch(e){ toastMsg(text); }
 });
