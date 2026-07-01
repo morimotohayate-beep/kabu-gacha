@@ -166,13 +166,13 @@ function spinSlot(slot, finalCode, index){
     slot.innerHTML=''; slot.appendChild(reel); slot.classList.remove('locked');
     const distance=-(total-1)*h;
     reel.style.transition='none'; reel.style.transform='translateY(0px)';
-    const duration=4700 + index*620 + Math.random()*220;
+    const duration=5000 + index*720 + Math.random()*180;
     setTimeout(()=>{
       reel.style.transition=`transform ${duration}ms cubic-bezier(.08,.82,.10,1)`;
       reel.style.transform=`translateY(${distance}px)`;
       const ticker=setInterval(()=>tone(420+Math.random()*420,.018,'square',.012),120);
       setTimeout(()=>{ clearInterval(ticker); slot.classList.add('locked'); tone(860+index*120,.08,'triangle',.04); vibrate(16); resolve(); }, duration+40);
-    }, 40 + index*130);
+    }, 45);
   });
 }
 async function spin(){
@@ -185,9 +185,7 @@ async function spin(){
   lastResults.forEach(()=>results.appendChild(makeSlot('')));
   tone(480,.05,'sawtooth',.03); setTimeout(()=>tone(700,.05,'sawtooth',.025),70); vibrate(12);
   const slots=[...results.querySelectorAll('.slot')];
-  for(let i=0;i<slots.length;i++){
-    await spinSlot(slots[i], lastResults[i], i);
-  }
+  await Promise.all(slots.map((slot,i)=>spinSlot(slot, lastResults[i], i)));
   triggerFinalEffects(); drawLabel.classList.add('show');
   startBtn.disabled=false; copyBtn.disabled=false; startBtn.textContent='もう一回'; spinning=false;
 }
