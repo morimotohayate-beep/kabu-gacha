@@ -153,13 +153,21 @@ async function spin(){
   startBtn.textContent='DRAWING...';
   lastCode=randCode(); lastQty=randQty();
   tone(480,.05,'sawtooth',.03); setTimeout(()=>tone(700,.05,'sawtooth',.025),70); vibrate(12);
-  const codeValues=Array.from({length:62}, randCode);
-  await spinSlot(codeSlot, lastCode, codeValues, 5000 + Math.random()*160, 420, 860);
-  machine.classList.remove('shine'); void machine.offsetWidth; machine.classList.add('shine');
-  tone(980,.07,'triangle',.035);
-  await new Promise(r=>setTimeout(r,620));
-  const qtyValues=Array.from({length:34}, ()=>`×${randQty()}`);
-  await spinSlot(qtySlot, `×${lastQty}`, qtyValues, 2200 + Math.random()*120, 520, 1060);
+
+  // 証券コードと株数は同時に回し始める。
+  // 証券コードが先に止まり、株数が少し遅れて止まる。
+  const codeValues=Array.from({length:48}, randCode);
+  const qtyValues=Array.from({length:44}, ()=>`×${randQty()}`);
+  const codeDuration=3100 + Math.random()*140;
+  const qtyDuration=3650 + Math.random()*160;
+
+  const codeSpin=spinSlot(codeSlot, lastCode, codeValues, codeDuration, 420, 860).then(()=>{
+    machine.classList.remove('shine'); void machine.offsetWidth; machine.classList.add('shine');
+    tone(980,.07,'triangle',.035);
+  });
+  const qtySpin=spinSlot(qtySlot, `×${lastQty}`, qtyValues, qtyDuration, 520, 1060);
+
+  await Promise.all([codeSpin, qtySpin]);
   triggerFinalEffects(); drawLabel.classList.add('show');
   startBtn.disabled=false; copyBtn.disabled=false; startBtn.textContent='もう一回'; spinning=false;
 }
